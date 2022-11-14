@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Crashmap</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css' rel='stylesheet' />
+    <link rel="stylesheet" type = "text/css" href="styles.css">
+   
+</head>
+<body>
+    <div class="titleBanner">
+        <h1>Crashmap</h1>
+    </div>
+    
+   <div id='map'></div>
+   
+<script>
+  mapboxgl.accessToken = 'pk.eyJ1IjoiZHNydHMiLCJhIjoiY2txaW9wODNpMnB4ZjMwbW8xNXlycmw1aSJ9.HZZ8y6gQG-rfYs774mZaEw';
+  var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/dark-v10',
+    zoom: 4,
+    center: [-98.57928608396436,39.828255521725794]  
+  });
+  map.addControl(new mapboxgl.NavigationControl());
+  map.addControl(new mapboxgl.FullscreenControl());
+
+map.on('load', () => {
+  map.addSource('fatals', {
+    type: 'geojson',
+    data: './fatals.geojson'
+  });
+ 
+map.addLayer(
+    {
+    'id': 'fatals-heat',
+    'type': 'heatmap',
+    'source': 'fatals',
+    'maxzoom': 22,
+    'paint': {
+// increase weight as diameter breast height increases
+    'heatmap-weight': {
+    'property': 'fatalities',
+    'type': 'exponential',
+    'stops': [
+        [1, 0],
+        [10,.5],
+        [20, 1]
+        ]
+    }  ,
+// increase intensity as zoom level increases
+    'heatmap-intensity': {
+    'stops': [
+    [1,0],    
+    [11, 1],
+    [22, 3]
+            ]
+    },
+// use sequential color palette to use exponentially as the weight increases
+     'heatmap-color': [
+        'interpolate',
+        ['linear'],
+        ['heatmap-density'],
+        0,
+        'rgba(236,222,239,0)',
+        0.2,
+        'rgb(253,253,57)',
+        0.3,
+        'rgb(255,220,58)',
+        0.4,
+        'rgb(255, 138, 58)',
+        0.5,
+        'rgb(255, 58, 58)', 
+        0.6,
+        'rgb(255, 58, 113)',
+        0.7,
+        'rgb(255, 58, 195)',
+        0.8,
+        'rgb(41, 64, 137)',
+        0.95,
+        'rgb(0, 255, 242)'
+
+        ],
+        // increase radius as zoom increases
+        'heatmap-radius': {
+            'stops': [
+            [4,2],    
+            [11, 15],
+            [22, 20]
+            ]
+        },
+        // decrease opacity to transition into the circle layer
+        'heatmap-opacity': {
+            'default': 0.9,
+            'stops': [
+            [14, 0.8],
+            [15, 0.7],
+            [17,0]
+                ]
+            }
+        }
+    },
+'waterway-label'
+);
+ 
+map.addLayer(
+    {
+        'id': 'fatal-point',
+        'type': 'circle',
+        'source': 'fatals',
+        'minzoom': 10,
+        'paint': {
+        // increase the radius of the circle as the zoom level and dbh value increases
+            'circle-radius': {
+                'property': 'fatalaties',
+                'type': 'exponential',
+                'stops': [
+                    [{ zoom: 10, value: 1 }, 5],
+                    [{ zoom: 10, value: 20 }, 10],
+                    [{ zoom: 22, value: 1 }, 200],
+                    [{ zoom: 22, value: 20 }, 500]
+                ]
+            }  ,
+            'circle-color': {
+            'property': 'fatalaties',
+            'type': 'exponential',
+            'stops': [
+                [1, 'rgba(236,222,239,0)'],
+                [2, 'rgb(236,222,239)'],
+                [4, 'rgb(208,209,230)'],
+                [8, 'rgb(166,189,219)'],
+                [10, 'rgb(103,169,207)'],
+                [15, 'rgb(28,144,153)'],
+                [20, 'rgb(1,108,89)']
+                ]
+            },
+            'circle-stroke-color': 'white',
+            'circle-stroke-width': 2,
+            'circle-opacity': {
+            'stops': [
+                [12, 0],
+                [15, 1]
+            ]
+            }
+        }
+    },
+    'waterway-label'
+    );
+});
+ 
+//click on tree to view fatalaties in a popup
+    map.on('click', 'fatal-point', function (e) {
+        new mapboxgl.Popup()
+        .setLngLat(e.features[0].geometry.coordinates)
+        .setHTML('<b>fatalaties:</b> ' + (e.features[0].properties.fatalities).toString())
+        .addTo(map);
+    });
+
+</script>
+
+</body>
+
+</html>

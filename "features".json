@@ -1,0 +1,5 @@
+"features": 
+[
+{ "type": "Feature", 
+    
+    "properties": { "latitude": 32.66622222, "longitude": -85.33665833000001, "fatalities": "1" }, "geometry": { "type": "Point", "coordinates": [ -85.33665833, 32.66622222 ] } },
