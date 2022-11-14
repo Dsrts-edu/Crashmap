@@ -18,5 +18,10 @@ The following command works for python 3:
 
 $ python3 -m http.server 
 
+<h1> Example Images </h1>
+
+<img src="https://raw.githubusercontent.com/Dsrts-edu/Crashmap/main/map1.png" width=100% height=100%>
+<img src="https://raw.githubusercontent.com/Dsrts-edu/Crashmap/main/map2.png" width=100% height=100%>
+
 
 
