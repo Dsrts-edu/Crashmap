@@ -1,5 +1,4 @@
 # Crashmap
-"All heat maps are population maps"
 
 Mostly created to see if any interesting patterns came out of mapping fatal crashes over a 10 year period (2009-2019)
 
